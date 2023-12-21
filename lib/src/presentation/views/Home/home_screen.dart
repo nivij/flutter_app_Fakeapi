@@ -1,17 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_api_project1/views/Home/widgets/ListTileWidget.dart';
-import 'package:flutter_api_project1/views/Home/widgets/carousel_slider.dart';
-import 'package:flutter_api_project1/views/Home/widgets/collection_category.dart';
-import 'package:flutter_api_project1/views/Home/widgets/price_tag.dart';
-import 'package:flutter_api_project1/views/Home/widgets/productGridView.dart';
+import 'package:flutter_api_project1/src/presentation/views/Home/widgets/ListTileWidget.dart';
+import 'package:flutter_api_project1/src/presentation/views/Home/widgets/carousel_slider.dart';
+import 'package:flutter_api_project1/src/presentation/views/Home/widgets/collection_category.dart';
+import 'package:flutter_api_project1/src/presentation/views/Home/widgets/productGridView.dart';
+
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:fluttericon/elusive_icons.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../constant/text_font.dart';
-import '../../controller.dart';
-import '../../product_model.dart';
+
+import '../../../config/controlller/controller.dart';
+import '../../../utils/constant/text_font.dart';
 import 'controler/homecontroller.dart';
 
 class HomeScreen extends StatelessWidget {

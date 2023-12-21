@@ -1,16 +1,18 @@
 // category_listview.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_api_project1/src/config/controlller/controller.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-import '../../../constant/text_font.dart';
-import '../../../product_model.dart';
+
+import '../../../../domain/models/product_model.dart';
+import '../../../../utils/constant/text_font.dart';
 import '../controler/homecontroller.dart';
 
 class CategoryListView extends StatelessWidget {
   final List<ProductElement> products;
-  final ProductController productController = Get.put(ProductController());
+  final HomeController homeController = Get.put(HomeController());
 
   CategoryListView({
     Key? key,
@@ -19,7 +21,7 @@ class CategoryListView extends StatelessWidget {
 
 
   String getFirstImageForCategory(String category) {
-    final productData = productController.productData.value;
+    final productData = homeController.productData.value;
     if (productData != null) {
       final productWithCategory = productData.products.firstWhere(
             (product) => product.category.toLowerCase() == category,
@@ -33,7 +35,7 @@ class CategoryListView extends StatelessWidget {
   }
 
   List<String> getProductCategories() {
-    final productData = productController.productData.value;
+    final productData = homeController.productData.value;
     if (productData != null) {
       return productData.products
           .map((product) => product.category.toLowerCase())

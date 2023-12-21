@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_api_project1/views/Home/widgets/price_tag.dart';
+import 'package:flutter_api_project1/src/presentation/views/Home/widgets/price_tag.dart';
 
 class ProductGridItem extends StatelessWidget {
   final String thumbnail;

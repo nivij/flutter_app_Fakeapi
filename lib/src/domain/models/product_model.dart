@@ -35,9 +35,9 @@ class ProductElement {
   String title;
   String description;
   int price;
-  double discountPercentage;
-  double rating;
-  int stock;
+  double? discountPercentage;
+  double? rating;
+  int? stock;
   String brand;
   String category;
   String thumbnail;
@@ -48,9 +48,9 @@ class ProductElement {
     required this.title,
     required this.description,
     required this.price,
-    required this.discountPercentage,
-    required this.rating,
-    required this.stock,
+    this.discountPercentage,
+    this.rating,
+    this.stock,
     required this.brand,
     required this.category,
     required this.thumbnail,
@@ -63,10 +63,8 @@ class ProductElement {
       title: json['title'],
       description: json['description'],
       price: json['price'],
-      discountPercentage: (json['discountPercentage'] is int)
-          ? json['discountPercentage'].toDouble()
-          : json['discountPercentage'],
-      rating: (json['rating'] is int) ? json['rating'].toDouble() : json['rating'],
+      discountPercentage: json['discountPercentage']?.toDouble(),
+      rating: json['rating']?.toDouble(),
       stock: json['stock'],
       brand: json['brand'],
       category: json['category'],
@@ -75,4 +73,19 @@ class ProductElement {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'price': price,
+      'discountPercentage': discountPercentage,
+      'rating': rating,
+      'stock': stock,
+      'brand': brand,
+      'category': category,
+      'thumbnail': thumbnail,
+      'images': images,
+    };
+  }
 }
