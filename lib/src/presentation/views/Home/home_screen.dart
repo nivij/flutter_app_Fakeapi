@@ -10,7 +10,7 @@ import 'package:fluttericon/elusive_icons.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../config/controlller/controller.dart';
+import '../../../data/api_fetch/controller.dart';
 import '../../../utils/constant/text_font.dart';
 import 'controler/homecontroller.dart';
 

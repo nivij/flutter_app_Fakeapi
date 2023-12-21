@@ -1,7 +1,7 @@
 // category_listview.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_api_project1/src/config/controlller/controller.dart';
+import 'package:flutter_api_project1/src/data/api_fetch/controller.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 

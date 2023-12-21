@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_api_project1/src/config/controlller/controller.dart';
+import 'package:flutter_api_project1/src/data/api_fetch/controller.dart';
 import 'package:flutter_api_project1/src/domain/models/product_model.dart';
 
 class AddProduct extends StatelessWidget {
