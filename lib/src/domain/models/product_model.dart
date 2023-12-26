@@ -1,75 +1,64 @@
-class Product {
-  List<ProductElement> products;  // Change this line to use ProductElement instead of Product
+import 'dart:convert';
 
-  int total;
-  int skip;
-  int limit;
+enum Category {
+  ELECTRONICS,
+  JEWELRY,
+  MEN_S_CLOTHING,
+  WOMEN_S_CLOTHING,
+}
 
-  Product( {
-    required this.products,
-    required this.total,
-    required this.skip,
-    required this.limit,
+class Rating {
+  double rate;
+  int count;
+
+  Rating({
+    required this.rate,
+    required this.count,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) {
-    List<dynamic> productsList = json['products'];
-    List<ProductElement> parsedProducts = List<ProductElement>.from(
-      productsList.map((product) => ProductElement.fromJson(product)),
+  factory Rating.fromJson(Map<String, dynamic> json) {
+    return Rating(
+      rate: json['rate']?.toDouble() ?? 0.0,
+      count: json['count'] ?? 0,
     );
+  }
 
-    return Product(
-      products: parsedProducts,
-      total: json['total'],
-      skip: json['skip'],
-      limit: json['limit'],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'rate': rate,
+      'count': count,
+    };
   }
 }
 
-
-
-
-class ProductElement {
+class Product {
   int id;
   String title;
+  double price;
   String description;
-  int price;
-  double? discountPercentage;
-  double? rating;
-  int? stock;
-  String brand;
-  String category;
-  String thumbnail;
-  List<String> images;
+  Category category;
+  String image;
+  Rating rating;
 
-  ProductElement({
+  Product({
     required this.id,
     required this.title,
-    required this.description,
     required this.price,
-    this.discountPercentage,
-    this.rating,
-    this.stock,
-    required this.brand,
+    required this.description,
     required this.category,
-    required this.thumbnail,
-    required this.images,
+    required this.image,
+    required this.rating,
   });
 
-  factory ProductElement.fromJson(Map<String, dynamic> json) {
-    return ProductElement(
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
       id: json['id'],
       title: json['title'],
       description: json['description'],
-      price: json['price'],
-      discountPercentage: json['discountPercentage']?.toDouble(),
-      rating: json['rating']?.toDouble(),
-      stock: json['stock'],
-      brand: json['brand'],
-      category: json['category'],
-      thumbnail: json['thumbnail'],
-      images: List<String>.from(json['images']),
+      price: json['price']?.toDouble() ?? 0.0,
+      category: _parseCategory(json['category']),
+      image: json['image'] ?? '',
+      rating: Rating.fromJson(json['rating']),
     );
   }
 
@@ -79,13 +68,39 @@ class ProductElement {
       'title': title,
       'description': description,
       'price': price,
-      'discountPercentage': discountPercentage,
-      'rating': rating,
-      'stock': stock,
-      'brand': brand,
-      'category': category,
-      'thumbnail': thumbnail,
-      'images': images,
+      'rating': rating.toJson(),
+      'category': _categoryToString(category),
+      'image': image,
     };
   }
+
+  static Category _parseCategory(dynamic category) {
+    switch (category?.toString().toLowerCase()) {
+      case 'electronics':
+        return Category.ELECTRONICS;
+      case 'jewelry':
+        return Category.JEWELRY;
+      case 'men\'s clothing':
+        return Category.MEN_S_CLOTHING;
+      case 'women\'s clothing':
+        return Category.WOMEN_S_CLOTHING;
+      default:
+      // Provide a default value or handle the error as needed
+        return Category.ELECTRONICS;
+    }
+  }
+
+  static String _categoryToString(Category category) {
+    switch (category) {
+      case Category.ELECTRONICS:
+        return 'electronics';
+      case Category.JEWELRY:
+        return 'jewelry';
+      case Category.MEN_S_CLOTHING:
+        return 'men\'s clothing';
+      case Category.WOMEN_S_CLOTHING:
+        return 'women\'s clothing';
+    }
+  }
 }
+

@@ -1,33 +1,29 @@
+import 'package:dio/dio.dart';
+import 'package:get/get.dart';
 import 'dart:convert';
 
-import 'package:get/get.dart';
 import '../../domain/models/product_model.dart';
-import 'package:http/http.dart' as http;
+import '../../domain/respositories/api_url.dart';
 
-import '../../domain/respositories/api_services.dart';
+class HomeController extends GetxController with StateMixin<List<Product>>{
+  // RxList<Product> products = <Product>[].obs;
+  // RxList<Product> highRatedProducts = <Product>[].obs;
+  // RxList<Product> smartphoneProducts = <Product>[].obs;
+  // final Rx<List<Product>> productData = Rx<List<Product>>(<Product>[]);
 
-
-class HomeController extends GetxController {
-  RxList<ProductElement> highRatedProducts = <ProductElement>[].obs;
-  RxList<ProductElement> smartphoneProducts = <ProductElement>[].obs;
-  final Rx<Product?> productData = Rx<Product?>(null);
-
-  @override
-  void onInit() {
-    super.onInit();
-    fetchProductData();
-  }
-
-  Future<List<ProductElement>> fetchData() async {
+  Future<List<Product>> fetchData() async {
     try {
       print('Fetching data...');
-      final response = await http.get(Uri.parse('${ApiService.baseUrl}${ApiService.fetchProduct}'));
+      final response = await Dio().get('${ApiUrl.baseUrl}${ApiUrl.fetchProduct}');
       if (response.statusCode == 200) {
-        final productData = Product.fromJson(json.decode(response.body));
-        print('Raw JSON response: ${response.body}');
+        final List<dynamic> rawData = json.decode(response.data);
+        final List<Product> products = rawData
+            .map((jsonProduct) => Product.fromJson(jsonProduct))
+            .toList();
 
-        print('Data fetched successfully: $productData');
-        return productData.products; // Return the list of products
+        print('Raw JSON response: ${response.data}');
+        print('Data fetched successfully: $products');
+        return products; // Return the list of products
       } else {
         throw Exception('Failed to load data');
       }
@@ -37,44 +33,58 @@ class HomeController extends GetxController {
     }
   }
 
-  void fetchProductData() async {
+  Future<List<Product>> getSpecificCategory() async {
     try {
-      final List<ProductElement> products = await fetchData();
-
-      highRatedProducts.assignAll(products
-          .where((product) => product.rating! > 4.60)
-          .toList());
-
-      smartphoneProducts.assignAll(products
-          .where((product) => product.category.toLowerCase() == 'smartphones')
-          .toList());
-    } catch (e) {
-      // Handle errors if necessary
-      print('Error fetching product data: $e');
-    }
-  }
-
-  Future<void> addProduct(ProductElement product) async {
-    try {
-      final response = await http.post(
-        Uri.parse('${ApiService.baseUrl}${ApiService.addProductEndpoint}'),
-        body: jsonEncode(product.toJson()), // Convert product to JSON
-        headers: {'Content-Type': 'application/json'}, // Specify content type
+      final response = await Dio().get(
+        '${ApiUrl.baseUrl}${ApiUrl.fetchProduct}${ApiUrl.category}?limit=20',
       );
 
       if (response.statusCode == 200) {
-        // Product added successfully, handle the response if needed
-        print('Product added successfully');
-        print('Response Body: ${response.body}');
-
+        final List<dynamic> rawData = response.data;
+        if (rawData is List) {
+          return rawData.map((data) => Product.fromJson(data)).toList();
+        } else {
+          print('Invalid response format: $rawData');
+          throw Exception('Failed to load data');
+        }
+      } else if (response.statusCode == 404) {
+        print('Category not found');
+        return []; // Return an empty list or handle it based on your application logic
       } else {
-        // Handle error response
-        print('Failed to add product: ${response.statusCode}');
+        print('Error: ${response.statusCode}');
+        throw Exception('Failed to load data');
       }
-    } catch (error) {
-      // Handle network or other errors
-      print('Error adding product: $error');
+    } catch (e) {
+      print("error --> $e");
+      throw e;
     }
   }
 
+
+
+  Future<void> addProduct(Product product) async {
+    try {
+      final response = await Dio().post(
+        '${ApiUrl.baseUrl}${ApiUrl.addProductEndpoint}',
+        data: product.toJson(),
+        options: Options(
+          contentType: 'application/json',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // Notify the UI that a new product is added
+        update();
+
+        print('Product added successfully');
+        print('Response Body: ${response.data}');
+      } else {
+        print('Failed to add product: ${response.statusCode}');
+        throw Exception('Failed to add product');
+      }
+    } catch (error) {
+      print('Error adding product: $error');
+      throw Exception('Error adding product: $error');
+    }
+  }
 }
