@@ -4,6 +4,7 @@ import 'package:flutter_api_project1/src/presentation/views/curd_operations/Add_
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/List_of_all_products.dart';
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/Specific_category.dart';
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/filteration.dart';
+import 'package:flutter_api_project1/src/presentation/views/curd_operations/update_product.dart';
 import 'package:get/get.dart';
 
 class DashBoard extends StatelessWidget {
@@ -17,18 +18,24 @@ class DashBoard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(onPressed: () => Get.to(ProductList()),
+            ElevatedButton(onPressed: () => Get.to(ProductListScreen()),
                 child: Text("list of products")),
+
+            ElevatedButton(onPressed: () => Get.to(Category_page()),
+                child: Text("Category")),
+
 
             ElevatedButton(onPressed: () => Get.to(filteration()),
                 child: Text("filteration")),
 
-              ElevatedButton(onPressed: () => Get.to(AddProductForm()),
+
+
+            ElevatedButton(onPressed: () => Get.to(AddProductForm()),
                 child: Text("Add product")),
 
 
-              ElevatedButton(onPressed: () => Get.to(Category_page()),
-                child: Text("Category")),
+               ElevatedButton(onPressed: () => Get.to(updateProductForm()),
+                child: Text("update")),
 
 
           ],

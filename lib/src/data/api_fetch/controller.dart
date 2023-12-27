@@ -16,14 +16,20 @@ class HomeController extends GetxController with StateMixin<List<Product>>{
       print('Fetching data...');
       final response = await Dio().get('${ApiUrl.baseUrl}${ApiUrl.fetchProduct}');
       if (response.statusCode == 200) {
-        final List<dynamic> rawData = json.decode(response.data);
-        final List<Product> products = rawData
-            .map((jsonProduct) => Product.fromJson(jsonProduct))
-            .toList();
+        // Check if the response data is a List<dynamic>
+        if (response.data is List<dynamic>) {
+          final List<dynamic> rawData = response.data;
+          final List<Product> products = rawData
+              .map((jsonProduct) => Product.fromJson(jsonProduct))
+              .toList();
 
-        print('Raw JSON response: ${response.data}');
-        print('Data fetched successfully: $products');
-        return products; // Return the list of products
+          print('Raw JSON response: ${response.data}');
+          print('Data fetched successfully: $products');
+          return products; // Return the list of products
+        } else {
+          // Handle the case where the response data is not a list
+          throw Exception('Invalid data format');
+        }
       } else {
         throw Exception('Failed to load data');
       }
@@ -32,6 +38,7 @@ class HomeController extends GetxController with StateMixin<List<Product>>{
       throw Exception('Error: $e');
     }
   }
+
 
   Future<List<Product>> getSpecificCategory() async {
     try {
@@ -72,19 +79,70 @@ class HomeController extends GetxController with StateMixin<List<Product>>{
         ),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Handle success for both 200 and 201
         // Notify the UI that a new product is added
-        update();
+        Get.find<HomeController>().update();
+
+        // Show a success message
+        Get.snackbar('Success', 'Product added successfully',
+            duration: Duration(seconds: 3),
+            snackPosition: SnackPosition.BOTTOM);
 
         print('Product added successfully');
         print('Response Body: ${response.data}');
       } else {
-        print('Failed to add product: ${response.statusCode}');
-        throw Exception('Failed to add product');
+        // Handle other status codes
+        throw Exception('Failed to add product: ${response.statusCode}');
       }
     } catch (error) {
+      // Handle Dio errors or other types of errors
       print('Error adding product: $error');
+      Get.snackbar('Error', 'Failed to add product',
+          duration: Duration(seconds: 3),
+          snackPosition: SnackPosition.BOTTOM);
       throw Exception('Error adding product: $error');
+    }
+  }
+
+  Future<void> updateProduct(int productId, Product updatedProduct) async {
+    try {
+      final response = await Dio().put(
+        '${ApiUrl.baseUrl}${ApiUrl.addProductEndpoint}/$productId',
+        data: updatedProduct.toJson(),
+        options: Options(
+          contentType: 'application/json',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // Notify the UI that the product is updated
+        update();
+
+        // Show a success message
+        Get.snackbar(
+          'Success',
+          'Product updated successfully',
+          duration: Duration(seconds: 3),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        print('Product updated successfully');
+        print('Response Body: ${response.data}');
+      } else {
+        // Handle other status codes
+        throw Exception('Failed to update product: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle Dio errors or other types of errors
+      print('Error updating product: $error');
+      Get.snackbar(
+        'Error',
+        'Failed to update product',
+        duration: Duration(seconds: 3),
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      throw Exception('Error updating product: $error');
     }
   }
 }

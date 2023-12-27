@@ -1,92 +1,64 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_api_project1/src/domain/models/product_model.dart';
-import 'package:http/http.dart' as http;
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:flutter_api_project1/src/data/api_fetch/controller.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
-import '../../../domain/respositories/api_url.dart';
+import '../../../domain/models/product_model.dart';
 
-class ProductList extends StatefulWidget {
+class ProductListScreen extends StatefulWidget {
   @override
-  _ProductListState createState() => _ProductListState();
+  _ProductListScreenState createState() => _ProductListScreenState();
 }
 
-class _ProductListState extends State<ProductList> {
-  final _numberOfPostsPerRequest = 20;
-  final PagingController<int, Product> _pagingController =
-  PagingController(firstPageKey: 1);
+class _ProductListScreenState extends State<ProductListScreen> {
+  late Future<List<Product>> _futureProducts;
+  final controller =Get.put(HomeController());
+
   @override
   void initState() {
-    _pagingController.addPageRequestListener((pageKey) {
-      fetchData(pageKey);
-    });
     super.initState();
-  }
-
-  Future<void> fetchData(int pageKey) async {
-    try {
-      final int itemsPerPage = _numberOfPostsPerRequest;
-
-      final response = await http.get(
-        Uri.parse(
-          '${ApiUrl.baseUrl}${ApiUrl.fetchProduct}?limit=$_numberOfPostsPerRequest&page=$pageKey',
-
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> responseData = json.decode(response.body);
-        final List<Product> newProducts =
-        responseData.map((data) => Product.fromJson(data)).toList();
-
-        _pagingController.appendPage(newProducts, pageKey + 1);
-      } else {
-        print('Error: ${response.statusCode}');
-        _pagingController.error = Exception('Failed to load data');
-      }
-    } catch (e) {
-      print("error --> $e");
-      _pagingController.error = e;
-    }
+    _futureProducts = controller.fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Cart App"),
-        centerTitle: true,
-
+        title: Text('Product List'),
       ),
+      body: FutureBuilder<List<Product>>(
+        future: _futureProducts,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            // Data fetched successfully
+            List<Product>? products = snapshot.data;
 
-      body: RefreshIndicator(
-        onRefresh: () => Future.sync(() => _pagingController.refresh()),
-        child: PagedListView<int, Product>(
-          pagingController: _pagingController,
-          builderDelegate: PagedChildBuilderDelegate<Product>(
-            itemBuilder: (context, product, index) {
-              return Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListTile(
-                      leading: Image.network(
-                        product.image,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                      ),
-                      title: Text(product.title),
-                      subtitle: Text(product.description),
-                      trailing: Text('\$${product.price.toStringAsFixed(2)}'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
+            return ListView.builder(
+              itemCount: products?.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: Image.network(
+                    products![index].image,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
+                  title: Text(products![index].title),
+                  subtitle: Text('Price: ${products[index].price.toString()}'),
+                  // Add more information as needed
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }

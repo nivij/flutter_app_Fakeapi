@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_api_project1/src/config/bindings/root_bindings.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 
 import 'home_vieww.dart';
@@ -19,6 +20,8 @@ class myApp extends StatelessWidget {
       theme: ThemeData.light(),
       debugShowCheckedModeBanner: false,
       home: DashBoard(),
+      initialBinding: RootBindings(),
+
     );
   }
 }

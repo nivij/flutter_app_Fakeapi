@@ -9,5 +9,6 @@ class RootBindings implements Bindings {
   @override
   void dependencies() {
 
+    Get.lazyPut(()=>HomeController());
     Get.put(HomeController());
   }}

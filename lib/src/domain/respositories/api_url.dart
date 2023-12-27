@@ -9,5 +9,5 @@ class ApiUrl {
     category = '/category/$newCategory';
   }
 
-  static const String addProductEndpoint = '/products/add';
+  static const String addProductEndpoint = '/products';
 }

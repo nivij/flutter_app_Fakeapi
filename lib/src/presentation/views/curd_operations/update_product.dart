@@ -4,12 +4,14 @@ import 'package:get/get.dart';
 import '../../../data/api_fetch/controller.dart';
 import '../../../domain/models/product_model.dart'; // Make sure to import Get package
 
-class AddProductForm extends StatefulWidget {
+class updateProductForm extends StatefulWidget {
   @override
-  _AddProductFormState createState() => _AddProductFormState();
+  _updateProductFormState createState() => _updateProductFormState();
 }
-class _AddProductFormState extends State<AddProductForm> {
+class _updateProductFormState extends State<updateProductForm> {
   final TextEditingController titleController = TextEditingController();
+  final TextEditingController idController = TextEditingController();
+
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController imageController = TextEditingController();
@@ -24,6 +26,9 @@ class _AddProductFormState extends State<AddProductForm> {
         child: Column(
           children: [
             TextFormField(
+              controller: idController,
+              decoration: InputDecoration(labelText: 'id'),
+            ),TextFormField(
               controller: titleController,
               decoration: InputDecoration(labelText: 'Title'),
             ),
@@ -60,14 +65,14 @@ class _AddProductFormState extends State<AddProductForm> {
       ),
       actions: [
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async{
             if (priceController.text.isEmpty) {
               // Handle the case where the price is not provided
               return;
             }
 
-            final newProduct = Product(
-              id: 0,
+            final updatedProduct = Product(
+              id: int.parse(idController.text),
               title: titleController.text,
               price: double.parse(priceController.text),
               description: descriptionController.text,
@@ -76,7 +81,7 @@ class _AddProductFormState extends State<AddProductForm> {
               rating: Rating(rate: 0.0, count: 0),
             );
 
-            Get.find<HomeController>().addProduct(newProduct);
+            await Get.find<HomeController>().updateProduct(int.parse(idController.text), updatedProduct);
 
             Navigator.of(context).pop();
           },
