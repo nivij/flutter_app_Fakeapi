@@ -10,4 +10,5 @@ class ApiUrl {
   }
 
   static const String addProductEndpoint = '/products';
+  static const String userEndpoint = '/users';
 }

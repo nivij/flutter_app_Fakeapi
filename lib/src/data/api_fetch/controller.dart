@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 
+import '../../domain/exceptions/api_exception.dart';
 import '../../domain/models/product_model.dart';
 import '../../domain/respositories/api_url.dart';
 
@@ -10,8 +11,57 @@ class HomeController extends GetxController with StateMixin<List<Product>>{
   // RxList<Product> highRatedProducts = <Product>[].obs;
   // RxList<Product> smartphoneProducts = <Product>[].obs;
   // final Rx<List<Product>> productData = Rx<List<Product>>(<Product>[]);
+  RxString username = ''.obs;
+  RxString password = ''.obs;
+
+  void updateUsername(String value) => username.value = value;
+  void updatePassword(String value) => password.value = value;
+
+
+
+  Future<void> loginUser() async {
+    try {
+
+      final response = await Dio().post( '${ApiUrl.baseUrl}${ApiUrl.userEndpoint}', data: {
+        'username': this.username.value,
+        'password': this.password.value,
+      });
+      if (response.statusCode == 200) {
+        Get.snackbar('Success', 'Login successful', // Corrected line
+            duration: Duration(seconds: 3),
+            snackPosition: SnackPosition.BOTTOM);
+      } else {
+        // throw ApiException.fromDioException(DioException(
+        //   response: Response(statusCode: response.statusCode),
+        //   requestOptions: RequestOptions(path: '${ApiUrl.baseUrl}${ApiUrl.userEndpoint}'),
+        // ));
+      }
+
+    } catch (error) {
+      print('Login error: $error');
+
+      if (error is DioError) {
+        // Handle Dio errors using ApiException
+        final apiException = ApiException.fromDioException(error);
+
+        Get.snackbar('Error', apiException.message,
+            duration: Duration(seconds: 3),
+            snackPosition: SnackPosition.BOTTOM);
+
+        // You can also log the specific error details if needed
+        print('DioError details: ${error.response?.data}');
+      } else {
+        // Handle other types of errors
+        Get.snackbar('Error', 'Login failed: $error',
+            duration: Duration(seconds: 3),
+            snackPosition: SnackPosition.BOTTOM);
+      }
+    }
+  }
+
 
   Future<List<Product>> fetchData() async {
+
     try {
       print('Fetching data...');
       final response = await Dio().get('${ApiUrl.baseUrl}${ApiUrl.fetchProduct}');
