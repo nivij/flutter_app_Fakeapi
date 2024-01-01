@@ -21,43 +21,36 @@ class HomeController extends GetxController with StateMixin<List<Product>>{
 
   Future<void> loginUser() async {
     try {
+      final response = await Dio().post(
+        '${ApiUrl.baseUrl}${ApiUrl.loginEndpoint}',
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+        data: {
+          'username':  this.username.value,
+          'password': this.password.value,
+        },
+      );
 
-      final response = await Dio().post( '${ApiUrl.baseUrl}${ApiUrl.userEndpoint}', data: {
-        'username': this.username.value,
-        'password': this.password.value,
-      });
       if (response.statusCode == 200) {
-        Get.snackbar('Success', 'Login successful', // Corrected line
-            duration: Duration(seconds: 3),
-            snackPosition: SnackPosition.BOTTOM);
-      } else {
-        // throw ApiException.fromDioException(DioException(
-        //   response: Response(statusCode: response.statusCode),
-        //   requestOptions: RequestOptions(path: '${ApiUrl.baseUrl}${ApiUrl.userEndpoint}'),
-        // ));
-      }
+        final Map<String, dynamic> jsonResponse = response.data;
+        final String token = jsonResponse['token'];
 
+        Get.snackbar(
+          'Success',
+          'Login successful. Token: $token',
+          duration: Duration(seconds: 3),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        print('Login successful: $jsonResponse');
+      } else {
+        print('Login failed with status code: ${response.statusCode}');
+      }
     } catch (error) {
       print('Login error: $error');
-
-      if (error is DioError) {
-        // Handle Dio errors using ApiException
-        final apiException = ApiException.fromDioException(error);
-
-        Get.snackbar('Error', apiException.message,
-            duration: Duration(seconds: 3),
-            snackPosition: SnackPosition.BOTTOM);
-
-        // You can also log the specific error details if needed
-        print('DioError details: ${error.response?.data}');
-      } else {
-        // Handle other types of errors
-        Get.snackbar('Error', 'Login failed: $error',
-            duration: Duration(seconds: 3),
-            snackPosition: SnackPosition.BOTTOM);
-      }
     }
   }
+
 
 
   Future<List<Product>> fetchData() async {
