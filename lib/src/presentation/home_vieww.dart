@@ -19,6 +19,11 @@ class DashBoard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            ElevatedButton(onPressed: () => Get.to(LoginScreen()),
+                child: Text("login")),
+
+
+
             ElevatedButton(onPressed: () => Get.to(ProductListScreen()),
                 child: Text("list of products")),
 
@@ -37,9 +42,6 @@ class DashBoard extends StatelessWidget {
 
                ElevatedButton(onPressed: () => Get.to(updateProductForm()),
                 child: Text("update")),
-
-              ElevatedButton(onPressed: () => Get.to(LoginScreen()),
-                child: Text("login")),
 
 
           ],

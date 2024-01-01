@@ -43,13 +43,28 @@ class HomeController extends GetxController with StateMixin<List<Product>>{
           snackPosition: SnackPosition.BOTTOM,
         );
         print('Login successful: $jsonResponse');
+      } else if (response.statusCode == 401) {
+        final Map<String, dynamic> errorResponse = response.data;
+        final String errorMessage = errorResponse['message'];
+
+        Get.snackbar(
+          'Authentication Error',
+          errorMessage,
+          duration: Duration(seconds: 3),
+          snackPosition: SnackPosition.BOTTOM,
+        );
+
+        print('Login failed with status code 401. Error message: $errorMessage');
       } else {
+        // Handle other status codes
         print('Login failed with status code: ${response.statusCode}');
       }
     } catch (error) {
       print('Login error: $error');
+      // Handle other errors, e.g., connection issues
     }
   }
+
 
 
 
