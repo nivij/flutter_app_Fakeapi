@@ -170,3 +170,51 @@ class Name {
 }
 
 
+class Cart {
+  int id;
+  dynamic userId;
+  DateTime date;
+  List<CartProduct> products;
+  int v;
+
+  Cart({
+    required this.id,
+    required this.userId,
+    required this.date,
+    required this.products,
+    required this.v,
+  });
+
+  factory Cart.fromJson(Map<String, dynamic> json) {
+    return Cart(
+      id: json['id'] as int? ?? 0,
+      userId: json['userId'],
+      date: DateTime.parse(json['date'] ?? ''),
+      products: (json['products'] as List<dynamic>?)
+          ?.map((productJson) => CartProduct.fromJson(productJson))
+          .toList() ?? [],
+      v: json['__v'] as int? ?? 0,
+    );
+  }
+}
+
+
+class CartProduct {
+  int productId;
+  int quantity;
+
+  CartProduct({
+    required this.productId,
+    required this.quantity,
+  });
+
+  factory CartProduct.fromJson(Map<String, dynamic> json) {
+    return CartProduct(
+      productId: json['productId'] as int? ?? 0,
+      quantity: json['quantity'] as int? ?? 0,
+    );
+  }
+}
+
+
+

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/Add_product.dart';
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/List_of_all_products.dart';
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/Specific_category.dart';
+import 'package:flutter_api_project1/src/presentation/views/curd_operations/cart.dart';
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/filteration.dart';
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/login.dart';
 import 'package:flutter_api_project1/src/presentation/views/curd_operations/update_product.dart';
@@ -42,6 +43,10 @@ class DashBoard extends StatelessWidget {
 
                ElevatedButton(onPressed: () => Get.to(updateProductForm()),
                 child: Text("update")),
+
+
+               ElevatedButton(onPressed: () => Get.to(CartListScreen()),
+                child: Text("Cart")),
 
 
           ],

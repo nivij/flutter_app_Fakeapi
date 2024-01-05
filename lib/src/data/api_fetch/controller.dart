@@ -96,6 +96,69 @@ class HomeController extends GetxController with StateMixin<List<Product>>{
       throw Exception('Error: $e');
     }
   }
+  Future<List<Cart>> fetchCartData({DateTime? startdate, DateTime? enddate}) async {
+    try {
+      print('Fetching cart data...');
+
+      // Check if startdate and enddate are both null
+      if (startdate == null && enddate == null) {
+        // If both are null, make a request without the date parameters
+        final response = await Dio().get('${ApiUrl.baseUrl}${ApiUrl.cartsEndpoint}');
+
+        if (response.statusCode == 200) {
+          if (response.data is List<dynamic>) {
+            final List<dynamic> rawData = response.data;
+            final List<Cart> cartProducts = rawData
+                .map((jsonProduct) => Cart.fromJson(jsonProduct))
+                .toList();
+
+            print('Raw JSON response: ${response.data}');
+            print('Cart data fetched successfully: $cartProducts');
+            return cartProducts;
+          } else {
+            throw Exception('Invalid data format');
+          }
+        } else {
+          throw Exception('Failed to load cart data');
+        }
+      } else {
+        // If startdate or enddate is not null, format them and include in the request URL
+        final formattedStartDate = startdate != null
+            ? "${startdate.year}-${startdate.month.toString().padLeft(2, '0')}-${startdate.day.toString().padLeft(2, '0')}"
+            : null;
+
+        final formattedEndDate = enddate != null
+            ? "${enddate.year}-${enddate.month.toString().padLeft(2, '0')}-${enddate.day.toString().padLeft(2, '0')}"
+            : null;
+
+        // print('-----------------------');
+        // print('Request URL: ${ApiUrl.baseUrl}${ApiUrl.cartsEndpoint}?startdate=$formattedStartDate&enddate=$formattedEndDate');
+        final response = await Dio().get('${ApiUrl.baseUrl}${ApiUrl.cartsEndpoint}?startdate=$formattedStartDate&enddate=$formattedEndDate');
+
+        if (response.statusCode == 200) {
+          if (response.data is List<dynamic>) {
+            final List<dynamic> rawData = response.data;
+            final List<Cart> cartProducts = rawData
+                .map((jsonProduct) => Cart.fromJson(jsonProduct))
+                .toList();
+
+            print('Raw JSON response: ${response.data}');
+            print('Cart data fetched successfully: $cartProducts');
+            return cartProducts;
+          } else {
+            throw Exception('Invalid data format');
+          }
+        } else {
+          throw Exception('Failed to load cart data');
+        }
+      }
+    } catch (e) {
+      print('Error fetching cart data: $e');
+      throw Exception('Error: $e');
+    }
+  }
+
+
 
 
   Future<List<Product>> getSpecificCategory() async {
